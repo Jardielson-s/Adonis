@@ -1,5 +1,6 @@
 'use strict'
 
+const Post = use('./app/Models/Post.js');
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -18,6 +19,10 @@ class PostController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+
+      const post =  await Post.all();
+
+      return post;
   }
 
   /**
@@ -29,7 +34,7 @@ class PostController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
+  async create ({ request }) {
   }
 
   /**
@@ -40,7 +45,11 @@ class PostController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store ({ request }) {
+
+    const data = request.only(['content']);
+    const post = await Post.create(data);
+    return post;
   }
 
   /**
@@ -53,6 +62,9 @@ class PostController {
    * @param {View} ctx.view
    */
   async show ({ params, request, response, view }) {
+     
+      const post = await Post.find(params.id);
+      return post;
   }
 
 
@@ -65,6 +77,15 @@ class PostController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+
+      const data = request.only(['content']);
+      const post = await Post.find(params.id);
+
+      post.merge(data);
+
+      await post.save();
+
+      return post;
   }
 
   /**
@@ -76,6 +97,10 @@ class PostController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+
+      const post = await Post.find(params.id);
+
+      await post.delete();
   }
 }
 
